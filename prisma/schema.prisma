@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==============================
+// Enums
+// ==============================
+
+enum Provider {
+  LOCAL
+  GOOGLE
+  KAKAO
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum FittingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+}
+
+// ==============================
+// User Domain
+// ==============================
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String?
+  nickname     String    @unique
+  profileImage String?
+  bio          String?
+  provider     Provider  @default(LOCAL)
+  providerId   String?
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  bodyInfo          BodyInfo?
+  posts             Post[]
+  comments          Comment[]
+  likes             Like[]
+  following         Follow[]        @relation("Follower")
+  followers         Follow[]        @relation("Following")
+  closetItems       ClosetItem[]
+  refreshTokens     RefreshToken[]
+  postViews         PostView[]
+  fittingJobs       FittingJob[]
+  notifications     Notification[]  @relation("NotificationReceiver")
+  sentNotifications Notification[]  @relation("NotificationSender")
+
+  @@index([email])
+  @@index([deletedAt])
+}
+
+model BodyInfo {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  height     Float?
+  weight     Float?
+  topSize    String?
+  bottomSize String?
+  shoeSize   Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ==============================
+// Post / Community Domain
+// ==============================
+
+model Post {
+  id        String    @id @default(cuid())
+  authorId  String
+  content   String?
+  viewCount Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  author   User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  images   PostImage[]
+  items    PostItem[]
+  comments Comment[]
+  likes    Like[]
+  views    PostView[]
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model PostImage {
+  id     String @id @default(cuid())
+  postId String
+  url    String
+  order  Int    @default(0)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model PostView {
+  id       String   @id @default(cuid())
+  postId   String
+  userId   String
+  viewedAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId, viewedAt])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([deletedAt])
+}
+
+model Like {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId])
+}
+
+// ==============================
+// Item / Closet Domain
+// ==============================
+
+model Item {
+  id         String   @id @default(cuid())
+  name       String
+  brand      String?
+  category   String?
+  price      Int?
+  imageUrl   String?
+  productUrl String?
+  source     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  postItems   PostItem[]
+  closetItems ClosetItem[]
+}
+
+model PostItem {
+  id     String @id @default(cuid())
+  postId String
+  itemId String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, itemId])
+}
+
+model ClosetItem {
+  id        String    @id @default(cuid())
+  userId    String
+  itemId    String
+  tags      String[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+// ==============================
+// Fitting Domain
+// ==============================
+
+model FittingJob {
+  id             String        @id @default(cuid())
+  userId         String
+  status         FittingStatus @default(PENDING)
+  inputImageUrl  String?
+  resultImageUrl String?
+  errorMessage   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ==============================
+// Notification Domain
+// ==============================
+
+model Notification {
+  id         String           @id @default(cuid())
+  receiverId String
+  senderId   String?
+  type       NotificationType
+  postId     String?
+  commentId  String?
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  receiver User  @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User? @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([receiverId, isRead])
+  @@index([createdAt])
+}
