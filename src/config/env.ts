@@ -14,8 +14,6 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default('30m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
 
-  REDIS_URL: z.string().default('redis://localhost:6379'),
-
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   AWS_REGION: z.string().default('ap-northeast-2'),
