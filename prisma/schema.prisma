@@ -7,267 +7,255 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==============================
-// Enums
-// ==============================
+model User {
+  id           String    @id @db.Uuid
+  provider     Provider
+  providerId   String    @unique @map("provider_id")
+  name         String
+  createdAt    DateTime  @default(now()) @map("created_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  profile              Profile?
+  bodyInfo             BodyInfo[]
+  userCharacter        UserCharacter?
+  closetArchives       ClosetArchive[]
+  posts                Post[]
+  postViews            PostView[]
+  postLikes            PostLike[]
+  postBookmarks        PostBookmark[]
+  followers            Follow[]             @relation("Following")
+  following            Follow[]             @relation("Follower")
+  receivedNotifications Notification[]      @relation("ReceivedNotifications")
+  notificationSettings NotificationSetting?
+
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
+  nickname  String   @unique
+  imageUrl  String?  @map("image_url")
+  gender    Gender
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+model BodyInfo {
+  id           String   @id @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  height       Int
+  weight       Int
+  measurements Json?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("body_info")
+}
+
+model Character {
+  id        String   @id @db.Uuid
+  gender    Gender
+  bodyType  BodyType @map("body_type")
+  imageUrl  String   @map("image_url")
+
+  userCharacters UserCharacter[]
+
+  @@map("characters")
+}
+
+model UserCharacter {
+  id          String          @id @db.Uuid
+  userId      String          @unique @map("user_id") @db.Uuid
+  characterId String?         @map("character_id") @db.Uuid
+  sourceType  CharacterSource @map("source_type")
+  imageUrl    String?         @map("image_url")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id])
+  character Character? @relation(fields: [characterId], references: [id])
+
+  @@map("user_character")
+}
+
+model ClosetArchive {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  imageUrl  String   @map("image_url")
+  bodyInfo  Json     @map("body_info")
+  modelUrl  String?  @map("model_url")
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user         User          @relation(fields: [userId], references: [id])
+  closetItems  ClosetItem[]
+  post         Post?
+
+  @@map("closet_archive")
+}
+
+model ClosetItem {
+  id               String       @id @db.Uuid
+  closetArchiveId  String       @map("closet_archive_id") @db.Uuid
+  brand            String?
+  name             String
+  imageUrl         String?      @map("image_url")
+  externalLink     String?      @map("external_link")
+  type             ClothingType
+  size             String?
+  createdAt        DateTime     @default(now()) @map("created_at")
+
+  closetArchive ClosetArchive @relation(fields: [closetArchiveId], references: [id])
+
+  @@map("closet_items")
+}
+
+model Post {
+  id               String   @id @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  closetArchiveId  String   @unique @map("closet_archive_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user          User          @relation(fields: [userId], references: [id])
+  closetArchive ClosetArchive @relation(fields: [closetArchiveId], references: [id])
+  postImages    PostImage[]
+  postViews     PostView[]
+  postLikes     PostLike[]
+  postBookmarks PostBookmark[]
+
+  @@map("posts")
+}
+
+model PostImage {
+  id        String   @id @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  imageUrl  String   @map("image_url")
+  order     Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id])
+
+  @@map("post_images")
+}
+
+model PostView {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("viewed_at")
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@map("post_views")
+}
+
+model PostLike {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("liked_at")
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+  @@map("post_likes")
+}
+
+model PostBookmark {
+  id        String   @id @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+  @@map("post_bookmarks")
+}
+
+model Follow {
+  id          String   @id @db.Uuid
+  followerId  String   @map("follower_id") @db.Uuid
+  followingId String   @map("following_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  follower  User @relation("Follower", fields: [followerId], references: [id])
+  following User @relation("Following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id         String           @id @db.Uuid
+  receiverId String           @map("receiver_id") @db.Uuid
+  type       NotificationType
+  message    String
+  targetType String?          @map("target_type")
+  targetId   String?          @map("target_id") @db.Uuid
+  isRead     Boolean          @default(false) @map("is_read")
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  receiver User  @relation("ReceivedNotifications", fields: [receiverId], references: [id])
+
+  @@map("notifications")
+}
+
+model NotificationSetting {
+  id          String   @id @db.Uuid
+  userId      String   @unique @map("user_id") @db.Uuid
+  pushEnabled Boolean  @default(true) @map("push_enabled")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("notification_settings")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
 
 enum Provider {
-  LOCAL
   GOOGLE
   KAKAO
 }
 
-enum Role {
-  USER
-  ADMIN
+enum Gender {
+  MALE
+  FEMALE
 }
 
-enum FittingStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
+enum BodyType {
+  SLIM
+  NORMAL
+  OVERWEIGHT
+  OBESE
+}
+
+enum CharacterSource {
+  CHARACTER
+  UPLOAD
+}
+
+enum ClothingType {
+  HAT
+  OUTER
+  TOP
+  BOTTOM
+  SHOES
 }
 
 enum NotificationType {
+  FIT_2D_COMPLETE
+  FIT_3D_COMPLETE
   LIKE
-  COMMENT
   FOLLOW
-}
-
-// ==============================
-// User Domain
-// ==============================
-
-model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  password     String?
-  nickname     String    @unique
-  profileImage String?
-  bio          String?
-  provider     Provider  @default(LOCAL)
-  providerId   String?
-  role         Role      @default(USER)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
-
-  bodyInfo          BodyInfo?
-  posts             Post[]
-  comments          Comment[]
-  likes             Like[]
-  following         Follow[]        @relation("Follower")
-  followers         Follow[]        @relation("Following")
-  closetItems       ClosetItem[]
-  refreshTokens     RefreshToken[]
-  postViews         PostView[]
-  fittingJobs       FittingJob[]
-  notifications     Notification[]  @relation("NotificationReceiver")
-  sentNotifications Notification[]  @relation("NotificationSender")
-
-  @@index([email])
-  @@index([deletedAt])
-}
-
-model BodyInfo {
-  id         String   @id @default(cuid())
-  userId     String   @unique
-  height     Float?
-  weight     Float?
-  topSize    String?
-  bottomSize String?
-  shoeSize   Float?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Follow {
-  followerId  String
-  followingId String
-  createdAt   DateTime @default(now())
-
-  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
-
-  @@id([followerId, followingId])
-  @@index([followingId])
-}
-
-model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-// ==============================
-// Post / Community Domain
-// ==============================
-
-model Post {
-  id        String    @id @default(cuid())
-  authorId  String
-  content   String?
-  viewCount Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  author   User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  images   PostImage[]
-  items    PostItem[]
-  comments Comment[]
-  likes    Like[]
-  views    PostView[]
-
-  @@index([authorId])
-  @@index([createdAt])
-  @@index([deletedAt])
-}
-
-model PostImage {
-  id     String @id @default(cuid())
-  postId String
-  url    String
-  order  Int    @default(0)
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-}
-
-model PostView {
-  id       String   @id @default(cuid())
-  postId   String
-  userId   String
-  viewedAt DateTime @default(now())
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, userId])
-  @@index([userId, viewedAt])
-}
-
-model Comment {
-  id        String    @id @default(cuid())
-  postId    String
-  authorId  String
-  content   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  @@index([postId])
-  @@index([deletedAt])
-}
-
-model Like {
-  userId    String
-  postId    String
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@id([userId, postId])
-  @@index([postId])
-}
-
-// ==============================
-// Item / Closet Domain
-// ==============================
-
-model Item {
-  id         String   @id @default(cuid())
-  name       String
-  brand      String?
-  category   String?
-  price      Int?
-  imageUrl   String?
-  productUrl String?
-  source     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  postItems   PostItem[]
-  closetItems ClosetItem[]
-}
-
-model PostItem {
-  id     String @id @default(cuid())
-  postId String
-  itemId String
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  @@unique([postId, itemId])
-}
-
-model ClosetItem {
-  id        String    @id @default(cuid())
-  userId    String
-  itemId    String
-  tags      String[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, itemId])
-  @@index([userId])
-  @@index([deletedAt])
-}
-
-// ==============================
-// Fitting Domain
-// ==============================
-
-model FittingJob {
-  id             String        @id @default(cuid())
-  userId         String
-  status         FittingStatus @default(PENDING)
-  inputImageUrl  String?
-  resultImageUrl String?
-  errorMessage   String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([status])
-}
-
-// ==============================
-// Notification Domain
-// ==============================
-
-model Notification {
-  id         String           @id @default(cuid())
-  receiverId String
-  senderId   String?
-  type       NotificationType
-  postId     String?
-  commentId  String?
-  isRead     Boolean          @default(false)
-  createdAt  DateTime         @default(now())
-
-  receiver User  @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  sender   User? @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
-
-  @@index([receiverId, isRead])
-  @@index([createdAt])
+  FEED_FROM_FOLLOWING
 }
