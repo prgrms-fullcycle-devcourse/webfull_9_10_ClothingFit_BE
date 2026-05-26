@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id           String    @id @db.Uuid
-  provider     String
+  provider     Provider
   providerId   String    @unique @map("provider_id")
   name         String
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -223,6 +223,11 @@ model NotificationSetting {
 }
 
 // ───────────────────────────── Enums ─────────────────────────────
+
+enum Provider {
+  GOOGLE
+  KAKAO
+}
 
 enum Gender {
   MALE
