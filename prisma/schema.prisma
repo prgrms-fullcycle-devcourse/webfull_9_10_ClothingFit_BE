@@ -127,7 +127,6 @@ model Post {
   postViews     PostView[]
   postLikes     PostLike[]
   postBookmarks PostBookmark[]
-  notifications Notification[]
 
   @@map("posts")
 }
@@ -206,7 +205,6 @@ model Notification {
   createdAt  DateTime         @default(now()) @map("created_at")
 
   receiver User  @relation("ReceivedNotifications", fields: [receiverId], references: [id])
-  post     Post? @relation(fields: [targetId], references: [id], map: "notification_post_fk")
 
   @@map("notifications")
 }
