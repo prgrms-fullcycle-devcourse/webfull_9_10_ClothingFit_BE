@@ -21,6 +21,9 @@ app.use(cookieParser());
 app.use(loggerMiddleware);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
+app.get('/openapi.json', (_req, res) => {
+    res.json(openApiDocument);
+});
 app.use('/api/v1', router);
 
 app.use(errorHandler);
