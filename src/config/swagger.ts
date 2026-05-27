@@ -1,13 +1,9 @@
-import { OpenApiGeneratorV3, OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
+import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 import type { OpenAPIObject } from 'openapi3-ts/oas30';
+import './zod';
+import { registry } from './registry';
 
-export const registry = new OpenAPIRegistry();
-
-registry.registerComponent('securitySchemes', 'bearerAuth', {
-  type: 'http',
-  scheme: 'bearer',
-  bearerFormat: 'JWT',
-});
+import '@/modules/health/health.swagger'
 
 const generateOpenApiDocument = (): OpenAPIObject => {
   const generator = new OpenApiGeneratorV3(registry.definitions);
