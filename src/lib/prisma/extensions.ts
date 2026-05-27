@@ -1,5 +1,5 @@
 import { uuidv7 } from 'uuidv7';
-import { basePrisma } from '@/infrastructure/prisma/client';
+import { basePrisma } from '@/lib/prisma/client';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import { logger } from '../../infrastructure/logger/logger';
+import { logger } from '@/lib/logger/logger';
 import { AppError } from './AppError';
 import { ErrorCode } from './ErrorCode';
 
