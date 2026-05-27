@@ -1,6 +1,6 @@
 import { app } from './app';
 import { env } from './config/env';
-import { prisma } from './infrastructure/prisma/client';
+import prisma from './infrastructure/prisma/extensions';
 import { logger } from './infrastructure/logger/logger';
 
 const PORT = Number(env.PORT);

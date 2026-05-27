@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { uuidv7 } from 'uuidv7';
-import { prisma as basePrisma } from '@/infrastructure/prisma/client';
+import { basePrisma } from '@/infrastructure/prisma/client';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
