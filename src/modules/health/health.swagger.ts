@@ -5,7 +5,7 @@ export const healthRegistry = registry;
 
 healthRegistry.registerPath({
   method: 'get',
-  path: '/api/v1/health',
+  path: '/health',
   tags: ['Health'],
   summary: '서버 상태 확인',
   description: '서버가 정상적으로 동작하는지 확인합니다.',
