@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { corsOptions } from './config/cors';
 import { openApiDocument } from './config/swagger';
-import { errorHandler } from './common/errors/errorHandler';
+import { errorHandler } from './common/errors/error.handler';
 import { loggerMiddleware } from './common/middleware/logger.middleware';
 import { router } from './routes';
 
