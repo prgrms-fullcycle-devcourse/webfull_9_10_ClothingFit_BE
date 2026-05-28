@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id           String    @id @db.Uuid
+  id           String    @id @db.Uuid @default(uuid())
   provider     Provider
   providerId   String    @unique @map("provider_id")
   name         String
@@ -32,7 +32,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   userId    String   @unique @map("user_id") @db.Uuid
   nickname  String   @unique
   imageUrl  String?  @map("image_url")
@@ -45,7 +45,7 @@ model Profile {
 }
 
 model BodyInfo {
-  id           String   @id @db.Uuid
+  id           String   @id @db.Uuid @default(uuid())
   userId       String   @map("user_id") @db.Uuid
   height       Int
   weight       Int
@@ -59,7 +59,7 @@ model BodyInfo {
 }
 
 model Character {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   gender    Gender
   bodyType  BodyType @map("body_type")
   imageUrl  String   @map("image_url")
@@ -70,7 +70,7 @@ model Character {
 }
 
 model UserCharacter {
-  id          String          @id @db.Uuid
+  id          String          @id @db.Uuid @default(uuid())
   userId      String          @unique @map("user_id") @db.Uuid
   characterId String?         @map("character_id") @db.Uuid
   sourceType  CharacterSource @map("source_type")
@@ -84,7 +84,7 @@ model UserCharacter {
 }
 
 model ClosetArchive {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   userId    String   @map("user_id") @db.Uuid
   imageUrl  String   @map("image_url")
   bodyInfo  Json     @map("body_info")
@@ -100,7 +100,7 @@ model ClosetArchive {
 }
 
 model ClosetItem {
-  id               String       @id @db.Uuid
+  id               String       @id @db.Uuid @default(uuid())
   closetArchiveId  String       @map("closet_archive_id") @db.Uuid
   brand            String?
   name             String
@@ -116,7 +116,7 @@ model ClosetItem {
 }
 
 model Post {
-  id               String   @id @db.Uuid
+  id               String   @id @db.Uuid @default(uuid())
   userId           String   @map("user_id") @db.Uuid
   closetArchiveId  String   @unique @map("closet_archive_id") @db.Uuid
   createdAt        DateTime @default(now()) @map("created_at")
@@ -132,7 +132,7 @@ model Post {
 }
 
 model PostImage {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   postId    String   @map("post_id") @db.Uuid
   imageUrl  String   @map("image_url")
   order     Int
@@ -144,7 +144,7 @@ model PostImage {
 }
 
 model PostView {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   userId    String   @map("user_id") @db.Uuid
   postId    String   @map("post_id") @db.Uuid
   createdAt DateTime @default(now()) @map("viewed_at")
@@ -156,7 +156,7 @@ model PostView {
 }
 
 model PostLike {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   userId    String   @map("user_id") @db.Uuid
   postId    String   @map("post_id") @db.Uuid
   createdAt DateTime @default(now()) @map("liked_at")
@@ -169,7 +169,7 @@ model PostLike {
 }
 
 model PostBookmark {
-  id        String   @id @db.Uuid
+  id        String   @id @db.Uuid @default(uuid())
   userId    String   @map("user_id") @db.Uuid
   postId    String   @map("post_id") @db.Uuid
   createdAt DateTime @default(now()) @map("created_at")
@@ -182,7 +182,7 @@ model PostBookmark {
 }
 
 model Follow {
-  id          String   @id @db.Uuid
+  id          String   @id @db.Uuid @default(uuid())
   followerId  String   @map("follower_id") @db.Uuid
   followingId String   @map("following_id") @db.Uuid
   createdAt   DateTime @default(now()) @map("created_at")
@@ -195,7 +195,7 @@ model Follow {
 }
 
 model Notification {
-  id         String           @id @db.Uuid
+  id         String           @id @db.Uuid @default(uuid())
   receiverId String           @map("receiver_id") @db.Uuid
   type       NotificationType
   message    String
@@ -210,7 +210,7 @@ model Notification {
 }
 
 model NotificationSetting {
-  id          String   @id @db.Uuid
+  id          String   @id @db.Uuid @default(uuid())
   userId      String   @unique @map("user_id") @db.Uuid
   pushEnabled Boolean  @default(true) @map("push_enabled")
   updatedAt   DateTime @updatedAt @map("updated_at")
