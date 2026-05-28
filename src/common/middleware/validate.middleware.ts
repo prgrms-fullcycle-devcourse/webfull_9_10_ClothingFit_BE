@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { AnyZodObject, ZodError } from 'zod';
-import { AppError } from '../errors/AppError';
-import { ErrorCode } from '../errors/ErrorCode';
+import { AppError } from '../errors/app-error';
+import { ErrorCode } from '../errors/error-code';
 
 interface ValidateSchemas {
   body?: AnyZodObject;

@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
-import { AppError } from '../common/errors/AppError';
-import { ErrorCode } from '../common/errors/ErrorCode';
+import { AppError } from '../common/errors/app-error';
+import { ErrorCode } from '../common/errors/error-code';
 
 export const defaultRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
