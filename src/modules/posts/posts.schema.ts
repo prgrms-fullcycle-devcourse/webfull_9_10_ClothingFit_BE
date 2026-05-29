@@ -103,14 +103,6 @@ export const bookmarkResponseSchema = z
   })
   .openapi('BookmarkResponse');
 
-// 게시글 상세 조회 POST_NOT_FOUND 에러 응답
-export const postNotFoundErrorResponseSchema = z
-  .object({
-    code: z.string().openapi({ example: 'POST_NOT_FOUND' }),
-    message: z.string().openapi({ example: '게시글이 존재하지 않습니다.' }),
-  })
-  .openapi('ErrorResponse');
-
 export type GetPostsQuery = z.infer<typeof getPostsQuerySchema>;
 export type PostIdParam = z.infer<typeof postIdParamSchema>;
 export type GetPostsResponse = z.infer<typeof getPostsResponseSchema>;

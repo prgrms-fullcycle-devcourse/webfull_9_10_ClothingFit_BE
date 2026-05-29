@@ -6,11 +6,10 @@ import {
   getPostByIdResponseSchema,
   likeResponseSchema,
   bookmarkResponseSchema,
-  postNotFoundErrorResponseSchema,
 } from './posts.schema';
-import { authErrorResponseSchema } from '@/common/schemas/error.schema';
 import { z } from 'zod';
 import { StatusCodes } from 'http-status-codes';
+import { ErrorResponseSchema } from '@/common/schemas/api.schema';
 
 export const postsRegistry = registry;
 
@@ -41,7 +40,7 @@ postsRegistry.registerPath({
     },
     401: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
@@ -62,11 +61,11 @@ postsRegistry.registerPath({
     },
     401: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
     404: {
       description: '게시글이 존재하지 않음',
-      content: { 'application/json': { schema: postNotFoundErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
@@ -87,7 +86,7 @@ postsRegistry.registerPath({
     },
     404: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
@@ -108,7 +107,7 @@ postsRegistry.registerPath({
     },
     401: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
@@ -129,7 +128,7 @@ postsRegistry.registerPath({
     },
     401: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
@@ -150,7 +149,7 @@ postsRegistry.registerPath({
     },
     401: {
       description: '인증 실패',
-      content: { 'application/json': { schema: authErrorResponseSchema } },
+      content: { 'application/json': { schema: ErrorResponseSchema } },
     },
   },
 });
