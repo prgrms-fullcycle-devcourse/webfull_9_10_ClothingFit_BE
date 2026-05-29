@@ -84,7 +84,7 @@ postsRegistry.registerPath({
       description: '좋아요 성공',
       content: { 'application/json': { schema: likeResponseSchema } },
     },
-    404: {
+    401: {
       description: '인증 실패',
       content: { 'application/json': { schema: ErrorResponseSchema } },
     },

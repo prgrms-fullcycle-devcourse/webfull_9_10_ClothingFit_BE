@@ -10,7 +10,7 @@ export const getPostsQuerySchema = z.object({
   height: z.coerce.number().int().min(0).max(300).optional(),
   weightMin: z.coerce.number().int().min(0).max(500).optional(),
   weightMax: z.coerce.number().int().min(0).max(500).optional(),
-  cursor: z.string().optional(),
+  cursor: z.string().uuid().optional(),
   limit: z.coerce.number().int().min(1).max(MAX_PAGE_LIMIT).default(20),
 });
 
