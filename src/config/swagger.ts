@@ -3,7 +3,8 @@ import type { OpenAPIObject } from 'openapi3-ts/oas30';
 import './zod';
 import { registry } from './registry';
 
-import '@/modules/health/health.swagger'
+import '@/modules/health/health.swagger';
+import '@/modules/posts/posts.swagger';
 
 const generateOpenApiDocument = (): OpenAPIObject => {
   const generator = new OpenApiGeneratorV3(registry.definitions);
