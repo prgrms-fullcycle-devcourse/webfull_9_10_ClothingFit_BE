@@ -23,3 +23,9 @@ export const CharacterListResponseSchema = z
   })
   .openapi('CharacterListResponse');
 
+export const SelectCharacterBodySchema = z
+  .object({
+    characterId: z.string().uuid().openapi({ example: '01900000-0000-7000-8000-000000000001' }),
+  })
+  .openapi('SelectCharacterBody');
+
