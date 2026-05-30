@@ -1,8 +1,8 @@
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from '../../config/constants';
 
 export interface CursorPaginationQuery {
-  cursor?: string;
-  limit?: string;
+  cursor?: string | string[];
+  limit?: string | number | string[];
 }
 
 export interface CursorPaginationParams {
@@ -16,10 +16,16 @@ export interface CursorPaginationResult<T> {
   hasMore: boolean;
 }
 
-export const parsePaginationParams = (query: CursorPaginationQuery): CursorPaginationParams => ({
-  cursor: query.cursor,
-  limit: Math.min(query.limit ? Number(query.limit) : DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT),
-});
+export const parsePaginationParams = (query: CursorPaginationQuery): CursorPaginationParams => {
+  const rawLimit = Array.isArray(query.limit) ? query.limit[0] : query.limit;
+  const parsed = Number(rawLimit);
+  const limit = Math.min(!rawLimit || Number.isNaN(parsed) ? DEFAULT_PAGE_LIMIT : parsed, MAX_PAGE_LIMIT);
+
+  return {
+    cursor: Array.isArray(query.cursor) ? query.cursor[0] : query.cursor,
+    limit,
+  };
+};
 
 export const buildPaginationResult = <T extends { id: string }>(
   items: T[],
