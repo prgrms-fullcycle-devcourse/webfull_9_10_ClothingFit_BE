@@ -9,7 +9,7 @@ const S3_PUBLIC_PREFIX = `https://${S3_BUCKET}.s3.${env.AWS_REGION}.amazonaws.co
 const MODEL_PREFIX = 'fitting-models/';
 
 // Meshy CDN이 응답하지 않을 때 무한 대기를 막기 위한 glb 다운로드 타임아웃
-const GLB_FETCH_TIMEOUT_MS = 30_000;
+const GLB_FETCH_TIMEOUT_MS = 60_000;
 
 /**
  * Meshy가 생성한 glb 모델을 우리 S3에 영속화하고 공개 URL을 반환합니다.

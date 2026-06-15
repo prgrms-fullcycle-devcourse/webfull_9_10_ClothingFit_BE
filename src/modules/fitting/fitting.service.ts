@@ -112,14 +112,14 @@ async function startMeshTask(sessionId: string, imageUrl: string): Promise<void>
             method: 'POST',
             body: JSON.stringify({
                 image_url: imageUrl,
+                ai_model: 'latest', // Meshy-6 (hd_texture 지원 조건 명시)
                 should_texture: true,
                 enable_pbr: true,
+                hd_texture: true, // 베이스컬러 텍스처 4K → 선명도 ↑ (추가 크레딧 없음)
                 target_formats: ['glb'],
-                // 품질 향상 옵션 (ai_model 업그레이드 없이 적용 가능)
-                model_type: 'standard', // 고디테일 메시
-                target_polycount: 50000, // 폴리곤 수 ↑ → 형태 디테일 ↑
-                should_remesh: true,
-                topology: 'quad', // 깔끔한 토폴로지
+                // 리메시를 끄면 Meshy-6 기본대로 최고 정밀 원본 메시를 받는다.
+                // 리메시(quad/폴리곤 고정)는 형태 디테일을 깎으므로 화질 우선이면 끈다.
+                should_remesh: false,
             }),
         });
         // .json() 파싱도 try 안에 둬야 본문이 비정상일 때 슬롯/카운트가 누수되지 않는다.
