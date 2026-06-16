@@ -127,6 +127,7 @@ export const getPostByIdService = async (id: string, userId: string) => {
           imageUrl: true,
           modelUrl: true,
           bodyInfo: true,
+          title: true,
           closetItems: {
             select: {
               imageUrl: true,
@@ -165,6 +166,7 @@ export const getPostByIdService = async (id: string, userId: string) => {
   return {
     id: post.id,
     createdAt: post.createdAt,
+    title: post.closetArchive?.title ?? null,
     user: {
       id: post.user.id,
       nickname: post.user.profile?.nickname ?? null,

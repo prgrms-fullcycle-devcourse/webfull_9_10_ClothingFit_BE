@@ -75,6 +75,7 @@ export const getPostByIdResponseSchema = z
   .object({
     id: z.string(),
     createdAt: z.string().datetime().openapi({ example: '2025-05-29T12:34:56.000Z' }),
+    title: z.string(),
     user: postAuthorSchema,
     image2dUrl: z.string().url(),
     model3dUrl: z.string().url().nullable(),
