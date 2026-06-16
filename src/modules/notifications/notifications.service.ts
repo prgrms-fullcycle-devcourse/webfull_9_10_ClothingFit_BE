@@ -368,7 +368,13 @@ const sendPushToUser = async (
       to: t.token,
       title: '알림', // 필요하면 타입별로 분기 가능
       body: dto.message,
-      data: { notificationId: dto.id, type: dto.type }, // 탭 시 딥링크용
+      data: {
+        notificationId: dto.id,
+        type: dto.type,
+        actor: { id: dto.actor?.id },
+        post: { id: dto.post?.id } ,
+        closetArchive: { id: dto.closetArchive?.id },
+      },
     })),
   );
 
